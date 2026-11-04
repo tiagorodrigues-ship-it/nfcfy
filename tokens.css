@@ -1,0 +1,72 @@
+/* ==========================================================================
+   NFC.FY — design tokens (Dark Glass)
+   Fundo preto profundo, verde neon controlado como detalhe de identidade,
+   vidro escuro só onde ele tem função (cabeçalho, preço, legenda da foto,
+   atendimento). Sora nos títulos, Instrument Sans no texto.
+   ========================================================================== */
+
+@font-face {
+  font-family: "Sora";
+  src: url("../assets/fonts/sora-latin-wght-normal.woff2") format("woff2");
+  font-weight: 100 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Instrument Sans";
+  src: url("../assets/fonts/instrument-sans-latin-wght-normal.woff2") format("woff2");
+  font-weight: 400 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  color-scheme: dark;
+
+  /* Superfícies */
+  --bg: #080a09;
+  --bg-2: #0d110f;
+  --bg-3: #131915;
+  --glass: rgba(20, 27, 23, 0.62);
+  --glass-strong: rgba(13, 18, 15, 0.84);
+
+  /* Linhas */
+  --line: rgba(255, 255, 255, 0.08);
+  --line-strong: rgba(255, 255, 255, 0.16);
+
+  /* Texto */
+  --text: #f2f5f3;
+  --text-2: #a1aaa5;
+  --text-3: #7f8984;
+
+  /* Verde */
+  --neon: #35e883;
+  --neon-hover: #5af59d;
+  --neon-ink: #04140b;
+  --neon-soft: rgba(53, 232, 131, 0.12);
+  --neon-line: rgba(53, 232, 131, 0.38);
+  --green: #168a52;
+  --green-deep: #0c3a26;
+
+  /* Tipografia */
+  --font-display: "Sora", "Avenir Next", "Segoe UI", system-ui, sans-serif;
+  --font-body: "Instrument Sans", "Segoe UI", system-ui, -apple-system, sans-serif;
+
+  --fs-body: 1.0625rem;
+  --fs-small: 0.9375rem;
+  --fs-h1: clamp(1.9rem, 1.1rem + 3.3vw, 3.75rem);
+  --fs-h2: clamp(1.9rem, 1.3rem + 2.2vw, 3rem);
+  --fs-h3: 1.1875rem;
+
+  /* Forma */
+  --radius-s: 10px;
+  --radius-m: 16px;
+  --radius-l: 28px;
+
+  /* Layout */
+  --wrap: 1180px;
+  --gutter: 20px;
+  --header-h: 72px;
+  --shadow-lift: 0 30px 60px -28px rgba(0, 0, 0, 0.8);
+}

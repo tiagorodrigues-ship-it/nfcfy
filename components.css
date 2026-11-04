@@ -1,0 +1,777 @@
+/* ==========================================================================
+   Componentes reutilizáveis
+   .btn · .site-header · .tabs · .faq · .float · dialog
+   ========================================================================== */
+
+/* ---------- Botões ---------- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 48px;
+  padding: 0 24px;
+  border: 1px solid transparent;
+  border-radius: 14px;
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  text-decoration: none;
+  text-align: center;
+  line-height: 1.2;
+  transition: background-color 0.25s, border-color 0.25s, color 0.25s, transform 0.25s, box-shadow 0.25s;
+}
+
+.btn:active {
+  transform: translateY(1px);
+}
+
+.btn--primary {
+  background: var(--neon);
+  color: var(--neon-ink);
+}
+
+.btn--primary:hover {
+  background: var(--neon-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 12px 28px -14px rgba(53, 232, 131, 0.7);
+}
+
+.btn--ghost {
+  border-color: var(--line-strong);
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.btn--ghost:hover {
+  border-color: var(--neon-line);
+  background: var(--neon-soft);
+  transform: translateY(-1px);
+}
+
+.btn--lg {
+  min-height: 54px;
+  padding: 0 30px;
+  font-size: 1rem;
+}
+
+.btn--sm {
+  min-height: 42px;
+  padding: 0 18px;
+  font-size: 0.9rem;
+}
+
+/* ---------- Cabeçalho (vidro) ---------- */
+.site-header {
+  position: sticky;
+  top: env(safe-area-inset-top, 0px);
+  z-index: 50;
+  background: rgba(8, 10, 9, 0.6);
+  -webkit-backdrop-filter: saturate(1.5) blur(18px);
+  backdrop-filter: saturate(1.5) blur(18px);
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.3s;
+}
+
+.site-header.is-scrolled {
+  border-bottom-color: var(--line);
+}
+
+.header-inner {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  height: var(--header-h);
+}
+
+.brand {
+  display: block;
+  flex: none;
+}
+
+.brand img {
+  width: 148px;
+  height: auto;
+}
+
+.nav {
+  display: none;
+  margin-left: auto;
+}
+
+.nav ul {
+  display: flex;
+  gap: 2px;
+}
+
+.nav ul a {
+  display: block;
+  padding: 10px 13px;
+  border-radius: 10px;
+  color: var(--text-2);
+  font-size: 0.9375rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: color 0.2s, background-color 0.2s;
+}
+
+.nav ul a:hover {
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.header-cta {
+  display: none;
+}
+
+.nav-toggle {
+  display: inline-grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  margin-left: auto;
+  border: 1px solid var(--line-strong);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.nav-toggle .icon--close,
+.nav-toggle[aria-expanded="true"] .icon--menu {
+  display: none;
+}
+
+.nav-toggle[aria-expanded="true"] .icon--close {
+  display: block;
+}
+
+/* Painel móvel */
+.nav.is-open {
+  display: block;
+  position: absolute;
+  inset: var(--header-h) 0 auto;
+  padding: 8px max(var(--gutter), env(safe-area-inset-right, 0px)) 24px max(var(--gutter), env(safe-area-inset-left, 0px));
+  background: var(--glass-strong);
+  -webkit-backdrop-filter: blur(22px);
+  backdrop-filter: blur(22px);
+  border-bottom: 1px solid var(--line);
+  box-shadow: var(--shadow-lift);
+}
+
+.nav.is-open ul {
+  flex-direction: column;
+  gap: 0;
+}
+
+.nav.is-open ul a {
+  padding: 16px 4px;
+  border-radius: 0;
+  border-bottom: 1px solid var(--line);
+  color: var(--text);
+  font-size: 1.05rem;
+}
+
+.nav-cta {
+  margin-top: 20px;
+  width: 100%;
+}
+
+@media (min-width: 1120px) {
+  .nav {
+    display: block;
+  }
+
+  .nav-toggle,
+  .nav-cta {
+    display: none;
+  }
+
+  .header-cta {
+    display: inline-flex;
+  }
+}
+
+/* ---------- Abas (galeria e categorias do FAQ) ---------- */
+.tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 42px;
+  padding: 0 18px;
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--text-2);
+  font-family: var(--font-display);
+  font-size: 0.9rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  transition: background-color 0.25s, border-color 0.25s, color 0.25s;
+}
+
+.tab:hover {
+  color: var(--text);
+  border-color: var(--text-3);
+}
+
+.tab[aria-selected="true"] {
+  background: var(--text);
+  border-color: var(--text);
+  color: var(--bg);
+}
+
+.swatch {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 1px solid var(--line-strong);
+}
+
+.swatch--white {
+  background: #f4f4f1;
+}
+
+.swatch--black {
+  background: #0b0c0b;
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+.tab[aria-selected="true"] .swatch--black {
+  border-color: rgba(0, 0, 0, 0.5);
+}
+
+.tab[aria-selected="true"] .swatch--white {
+  border-color: rgba(0, 0, 0, 0.35);
+}
+
+/* ---------- Acordeão (FAQ) ---------- */
+.faq-item {
+  border-bottom: 1px solid var(--line);
+}
+
+.faq-item:first-child {
+  border-top: 1px solid var(--line);
+}
+
+.faq-item h3 {
+  letter-spacing: -0.015em;
+  line-height: 1.35;
+}
+
+.faq-q {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  width: 100%;
+  padding: 22px 0;
+  border: 0;
+  background: none;
+  text-align: left;
+  font-family: var(--font-display);
+  font-size: 1.0625rem;
+  font-weight: 500;
+  letter-spacing: -0.015em;
+  line-height: 1.35;
+  transition: color 0.2s;
+}
+
+.faq-q:hover {
+  color: var(--neon);
+}
+
+.faq-icon {
+  position: relative;
+  flex: none;
+  width: 30px;
+  height: 30px;
+  border: 1px solid var(--line-strong);
+  border-radius: 50%;
+  transition: background-color 0.25s, border-color 0.25s;
+}
+
+.faq-icon::before,
+.faq-icon::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 11px;
+  height: 1.6px;
+  background: var(--text);
+  border-radius: 2px;
+  transform: translate(-50%, -50%);
+  transition: transform 0.3s, background-color 0.25s;
+}
+
+.faq-icon::after {
+  transform: translate(-50%, -50%) rotate(90deg);
+}
+
+.faq-item.is-open .faq-icon {
+  background: var(--neon);
+  border-color: var(--neon);
+}
+
+.faq-item.is-open .faq-icon::before,
+.faq-item.is-open .faq-icon::after {
+  background: var(--neon-ink);
+}
+
+.faq-item.is-open .faq-icon::after {
+  transform: translate(-50%, -50%) rotate(0deg);
+}
+
+.faq-a {
+  display: grid;
+  grid-template-rows: 0fr;
+  visibility: hidden;
+  transition: grid-template-rows 0.32s ease, visibility 0s linear 0.32s;
+}
+
+.faq-a > div {
+  min-height: 0;
+  overflow: hidden;
+}
+
+.faq-a p,
+.faq-a ul {
+  padding: 0 clamp(0px, 6vw, 52px) 0 0;
+  color: var(--text-2);
+  max-width: 62ch;
+}
+
+.faq-a > div > :last-child {
+  margin-bottom: 24px;
+}
+
+.faq-a p + p,
+.faq-a p + ul,
+.faq-a ul + p {
+  margin-top: 12px;
+}
+
+.faq-a ul {
+  display: grid;
+  gap: 8px;
+  list-style: none;
+}
+
+.faq-a ul li {
+  position: relative;
+  padding-left: 18px;
+}
+
+.faq-a ul li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.7em;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--neon);
+  opacity: 0.8;
+}
+
+.faq-a a {
+  color: var(--neon);
+  text-underline-offset: 4px;
+}
+
+.faq-item.is-open .faq-a {
+  grid-template-rows: 1fr;
+  visibility: visible;
+  transition-delay: 0s;
+}
+
+/* ---------- Botão flutuante de WhatsApp (vidro) ---------- */
+.float {
+  position: fixed;
+  right: max(18px, env(safe-area-inset-right, 0px));
+  bottom: max(18px, env(safe-area-inset-bottom, 0px));
+  z-index: 40;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 12px;
+}
+
+.float-btn {
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  border: 1px solid var(--line-strong);
+  border-radius: 50%;
+  background: var(--glass-strong);
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+  color: var(--neon);
+  box-shadow: 0 16px 36px -14px rgba(0, 0, 0, 0.9);
+  transition: border-color 0.25s, transform 0.25s, background-color 0.25s;
+}
+
+.float-btn:hover {
+  border-color: var(--neon-line);
+  background: rgba(20, 30, 25, 0.9);
+  transform: translateY(-2px);
+}
+
+.float-btn .icon--close,
+.float-btn[aria-expanded="true"] .icon--chat {
+  display: none;
+}
+
+.float-btn[aria-expanded="true"] .icon--close {
+  display: block;
+}
+
+.float-menu {
+  width: min(320px, calc(100vw - 36px));
+  padding: 8px;
+  background: var(--glass-strong);
+  -webkit-backdrop-filter: blur(22px) saturate(1.4);
+  backdrop-filter: blur(22px) saturate(1.4);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-m);
+  box-shadow: 0 30px 60px -24px rgba(0, 0, 0, 0.9), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  animation: menu-in 0.24s ease-out;
+}
+
+@keyframes menu-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
+.float-title {
+  padding: 12px 12px 8px;
+  color: var(--text-3);
+  font-size: 0.875rem;
+}
+
+.float-menu a {
+  display: grid;
+  gap: 2px;
+  padding: 12px;
+  border-radius: 10px;
+  text-decoration: none;
+  transition: background-color 0.2s;
+}
+
+.float-menu a:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.float-name {
+  font-family: var(--font-display);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.float-phone {
+  color: var(--text-3);
+  font-size: 0.9rem;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- Diálogo de pedido e suporte (vidro) ---------- */
+dialog {
+  width: min(560px, calc(100vw - 32px));
+  max-height: calc(100dvh - 32px);
+  padding: 0;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-l);
+  background: var(--bg-2);
+  color: var(--text);
+  box-shadow: 0 50px 100px -30px rgba(0, 0, 0, 0.95), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  overflow: auto;
+}
+
+dialog::backdrop {
+  background: rgba(2, 4, 3, 0.7);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+}
+
+dialog[open] {
+  animation: dialog-in 0.26s ease-out;
+}
+
+@keyframes dialog-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.985);
+  }
+}
+
+.dialog-panel {
+  position: relative;
+  display: grid;
+  gap: 20px;
+  padding: clamp(24px, 5vw, 36px);
+  background: radial-gradient(120% 60% at 0% 0%, rgba(53, 232, 131, 0.07), transparent 60%);
+}
+
+.dialog-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.04);
+  transition: background-color 0.2s, border-color 0.2s;
+}
+
+.dialog-close:hover {
+  background: rgba(255, 255, 255, 0.09);
+  border-color: var(--line-strong);
+}
+
+.dialog-panel h2 {
+  font-size: 1.65rem;
+  padding-right: 48px;
+}
+
+.dialog-intro {
+  color: var(--text-2);
+  max-width: 46ch;
+}
+
+.order-fields {
+  display: grid;
+  gap: 16px;
+}
+
+dialog[data-mode="support"] .order-fields {
+  display: none;
+}
+
+.field {
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.field > label,
+.field > legend {
+  padding: 0;
+  font-size: 0.9375rem;
+  font-weight: 600;
+}
+
+.field input[type="text"],
+.field input[type="url"],
+.field select {
+  width: 100%;
+  min-height: 48px;
+  padding: 0 14px;
+  border: 1px solid var(--line-strong);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.04);
+  transition: border-color 0.2s, box-shadow 0.2s, background-color 0.2s;
+}
+
+.field input::placeholder {
+  color: var(--text-3);
+}
+
+.field input:hover,
+.field select:hover {
+  border-color: var(--text-3);
+}
+
+.field input:focus,
+.field select:focus {
+  outline: none;
+  border-color: var(--neon);
+  background: rgba(255, 255, 255, 0.06);
+  box-shadow: 0 0 0 4px rgba(53, 232, 131, 0.14);
+}
+
+.choice-row {
+  display: flex;
+  gap: 8px;
+}
+
+.choice {
+  position: relative;
+  flex: 1;
+}
+
+.choice input {
+  position: absolute;
+  opacity: 0;
+  inset: 0;
+  cursor: pointer;
+}
+
+.choice span {
+  display: grid;
+  place-items: center;
+  min-height: 48px;
+  border: 1px solid var(--line-strong);
+  border-radius: 12px;
+  font-weight: 600;
+  transition: background-color 0.25s, border-color 0.25s, color 0.25s;
+}
+
+.choice input:hover + span {
+  border-color: var(--text-3);
+}
+
+.choice input:checked + span {
+  background: var(--neon);
+  border-color: var(--neon);
+  color: var(--neon-ink);
+}
+
+.choice input:focus-visible + span {
+  outline: 2px solid var(--neon);
+  outline-offset: 3px;
+}
+
+.preview {
+  display: grid;
+  gap: 6px;
+  padding: 14px 16px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+}
+
+.preview-label {
+  color: var(--text-3);
+  font-size: 0.8125rem;
+  font-weight: 600;
+}
+
+.preview p {
+  font-size: 0.9375rem;
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+}
+
+.dialog-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+@media (max-width: 480px) {
+  .dialog-actions {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ---------- Botão flutuante: entrada discreta e saída de cena ---------- */
+.float {
+  transition: opacity 0.3s ease, transform 0.3s ease, visibility 0s;
+}
+
+/* Some enquanto o contato, o rodapé (e o FAQ em telas estreitas) estão visíveis,
+   para não cobrir botões nem textos */
+.float.is-away {
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(10px);
+  pointer-events: none;
+  transition: opacity 0.3s ease, transform 0.3s ease, visibility 0s linear 0.3s;
+}
+
+.float-btn {
+  position: relative;
+  animation: float-in 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) 0.9s both;
+}
+
+.float-btn::after {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border: 1.5px solid var(--neon);
+  border-radius: 50%;
+  opacity: 0;
+  pointer-events: none;
+  animation: float-pulse 2.4s ease-out 2.4s 2;
+}
+
+@keyframes float-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+}
+
+@keyframes float-pulse {
+  from {
+    opacity: 0.55;
+    transform: scale(1);
+  }
+
+  to {
+    opacity: 0;
+    transform: scale(1.6);
+  }
+}
+
+/* ---------- Documento (política de privacidade) ---------- */
+dialog.dialog--doc {
+  width: min(720px, calc(100vw - 32px));
+}
+
+.doc {
+  gap: 14px;
+}
+
+.doc-date {
+  margin-top: -6px;
+  color: var(--text-3);
+  font-size: 0.875rem;
+}
+
+.doc h3 {
+  margin-top: 12px;
+  font-size: 1.05rem;
+}
+
+.doc p,
+.doc li {
+  color: var(--text-2);
+  font-size: 0.96875rem;
+}
+
+.doc ul {
+  display: grid;
+  gap: 8px;
+  padding-left: 20px;
+  list-style: disc;
+}
+
+.doc li::marker {
+  color: var(--neon);
+}
+
+.doc strong {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.doc a {
+  color: var(--neon);
+  text-underline-offset: 4px;
+}
