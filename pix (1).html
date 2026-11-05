@@ -1,0 +1,456 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#080A09">
+  <title>Pagamento via Pix | NFC.FY</title>
+  <style>
+/* NFC.FY — página de pagamento Pix
+   Tokens abaixo seguem a direção Dark Glass do site institucional.
+   Se o site usar outros valores/fonte, ajuste apenas este bloco. */
+:root {
+  --bg: #080A09;
+  --text: #F2F5F3;
+  --muted: rgba(242, 245, 243, .62);
+  --glass: rgba(255, 255, 255, .045);
+  --glass-strong: rgba(255, 255, 255, .08);
+  --border: rgba(255, 255, 255, .10);
+  --accent: #39FF88;
+  --accent-soft: rgba(57, 255, 136, .14);
+  --on-accent: #04130A;
+  --radius: 20px;
+  --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+[hidden] { display: none !important; }
+
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  min-height: 100vh;
+  min-height: 100dvh;
+  background:
+    radial-gradient(120% 60% at 50% -10%, rgba(57, 255, 136, .10), transparent 60%),
+    var(--bg);
+  color: var(--text);
+  font-family: var(--font);
+  -webkit-font-smoothing: antialiased;
+}
+
+.page {
+  width: 100%;
+  max-width: 440px;
+  margin: 0 auto;
+  min-height: 100dvh;
+  padding: max(28px, env(safe-area-inset-top)) 20px max(24px, env(safe-area-inset-bottom));
+  display: flex;
+  flex-direction: column;
+}
+.state { display: flex; flex-direction: column; align-items: center; flex: 1; }
+.state-center { justify-content: center; text-align: center; gap: 8px; }
+
+/* Assistente */
+.assistant { display: flex; flex-direction: column; align-items: center; gap: 14px; margin: 8px 0 26px; }
+.orb {
+  position: relative;
+  width: 76px; height: 76px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: var(--glass-strong);
+  -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px);
+  color: var(--accent);
+  display: grid; place-items: center;
+  cursor: pointer;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+.orb-icon, .orb > svg { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); display: block; }
+.orb-static { cursor: default; }
+.orb:focus-visible, .copy:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+.rings i {
+  position: absolute; inset: 0; border-radius: 50%;
+  border: 1px solid var(--accent); opacity: 0; pointer-events: none;
+}
+.assistant.playing .rings i { animation: ring 2.1s ease-out infinite; }
+.assistant.playing .rings i:nth-child(2) { animation-delay: .7s; }
+.assistant.playing .rings i:nth-child(3) { animation-delay: 1.4s; }
+@keyframes ring { 0% { transform: scale(1); opacity: .55; } 100% { transform: scale(1.9); opacity: 0; } }
+
+.waves { display: flex; align-items: center; justify-content: center; gap: 4px; height: 28px; }
+.waves b {
+  width: 3px; height: 6px; border-radius: 3px;
+  background: var(--accent); opacity: .35;
+  transition: opacity .2s;
+}
+.assistant.playing .waves b { opacity: 1; animation: wave 1s ease-in-out infinite; }
+.waves b:nth-child(2n) { animation-delay: .15s; }
+.waves b:nth-child(3n) { animation-delay: .3s; }
+.waves b:nth-child(5n) { animation-delay: .45s; }
+@keyframes wave { 0%, 100% { height: 6px; } 50% { height: 26px; } }
+
+.assistant-status { margin: 0; font-size: 13px; color: var(--muted); letter-spacing: .01em; }
+.assistant.blocked .orb { box-shadow: 0 0 0 4px var(--accent-soft); animation: pulse 1.8s ease-in-out infinite; }
+@keyframes pulse { 50% { box-shadow: 0 0 0 9px rgba(57, 255, 136, 0); } }
+
+/* Título */
+.head { text-align: center; margin-bottom: 24px; }
+.head h1 { margin: 0 0 6px; font-size: 28px; line-height: 1.15; font-weight: 650; letter-spacing: -.02em; }
+.head p { margin: 0; color: var(--muted); font-size: 15px; line-height: 1.5; }
+
+/* Cartão */
+.card {
+  width: 100%;
+  background: var(--glass);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  -webkit-backdrop-filter: blur(18px); backdrop-filter: blur(18px);
+  padding: 20px;
+}
+.card-top { display: flex; align-items: center; gap: 10px; }
+.key-icon {
+  width: 36px; height: 36px; border-radius: 10px;
+  background: var(--accent-soft); color: var(--accent);
+  display: grid; place-items: center; flex: none;
+}
+.label { font-size: 14px; font-weight: 600; }
+.secure {
+  margin-left: auto; display: inline-flex; align-items: center; gap: 5px;
+  font-size: 12px; color: var(--accent);
+}
+.key {
+  margin: 18px 0 18px;
+  font-size: 22px; line-height: 1.3; font-weight: 650; letter-spacing: -.01em;
+  word-break: break-all; overflow-wrap: anywhere;
+  user-select: all; -webkit-user-select: all;
+}
+.meta { margin: 0; display: grid; gap: 12px; padding-top: 16px; border-top: 1px solid var(--border); }
+.meta div { display: flex; justify-content: space-between; gap: 16px; }
+.meta dt { color: var(--muted); font-size: 13px; }
+.meta dd { margin: 0; font-size: 14px; font-weight: 550; text-align: right; }
+
+/* Botão */
+.copy {
+  width: 100%; margin-top: 16px;
+  min-height: 56px; padding: 0 20px;
+  border: 0; border-radius: 16px;
+  background: var(--accent); color: var(--on-accent);
+  font: inherit; font-size: 16px; font-weight: 700;
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  cursor: pointer;
+  box-shadow: 0 10px 30px -10px rgba(57, 255, 136, .55);
+  transition: transform .12s ease, filter .15s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+.copy:active { transform: scale(.98); }
+.copy .ic-ok { display: none; }
+.copy.done .ic-copy { display: none; }
+.copy.done .ic-ok { display: block; animation: pop .25s ease; }
+@keyframes pop { from { transform: scale(.4); } to { transform: scale(1); } }
+
+.toast {
+  min-height: 20px; margin: 12px 0 0;
+  font-size: 14px; font-weight: 600; color: var(--accent);
+  opacity: 0; transition: opacity .2s; text-align: center;
+}
+.toast.show { opacity: 1; }
+.toast.error { color: #FF8A8A; }
+
+.hint { margin: 8px 0 0; font-size: 13px; line-height: 1.5; color: var(--muted); text-align: center; max-width: 320px; }
+
+.logo-wrap { display: flex; justify-content: center; margin: 0 0 18px; }
+.logo { display: block; height: 34px; width: auto; }
+.brand { margin-top: auto; padding-top: 28px; text-align: center; font-size: 12px; letter-spacing: .24em; color: rgba(242, 245, 243, .35); font-weight: 600; }
+
+.spinner { width: 28px; height: 28px; margin: 40vh auto 0; border-radius: 50%; border: 2px solid var(--border); border-top-color: var(--accent); animation: spin .8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+  .assistant.playing .waves b { height: 16px; }
+}
+</style>
+</head>
+<body>
+  <main class="page" id="app" aria-live="polite">
+    <div class="logo-wrap"><svg class="logo" xmlns="http://www.w3.org/2000/svg" viewBox="-1 -1 251.1 50" role="img" aria-label="NFC.FY"><title>NFC.FY</title><g transform="translate(0 0) scale(0.75)"><rect width="64" height="64" rx="16" fill="#0F1512"/><rect x=".5" y=".5" width="63" height="63" rx="15.5" fill="none" stroke="#fff" stroke-opacity=".16"/><path d="M18.5 49V20L45.5 49V32" fill="none" stroke="#F2F5F3" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/><circle cx="45.5" cy="17.5" r="4.6" fill="#35E883"/></g><g transform="translate(60 4)"><path fill="#F2F5F3" d="M0 40V0H11.95L29.47 33.86H31.29L30.19 34.85V0H37.1V40H25.04L7.52 6.14H5.7L6.79 5.15V40Z M42.3 40V0H49.59V40ZM48.5 23.11V16.89L64.73 16.85V23.08ZM48.5 6.22V0H65.53V6.22Z M90.26 41.03Q84.8 41.03 80.93 39.12Q77.05 37.22 74.63 34.14Q72.21 31.06 71.07 27.46Q69.93 23.86 69.93 20.49V19.29Q69.93 15.61 71.1 11.98Q72.26 8.35 74.7 5.39Q77.13 2.43 80.93 0.65Q84.73 -1.14 89.95 -1.14Q95.36 -1.14 99.36 0.8Q103.36 2.74 105.74 6.22Q108.12 9.71 108.59 14.39H101.23Q100.81 11.52 99.25 9.57Q97.7 7.63 95.32 6.63Q92.93 5.63 89.95 5.63Q86.87 5.63 84.5 6.7Q82.14 7.77 80.55 9.7Q78.97 11.64 78.15 14.24Q77.34 16.83 77.34 19.95Q77.34 22.96 78.15 25.56Q78.97 28.15 80.61 30.12Q82.25 32.08 84.66 33.17Q87.07 34.26 90.26 34.26Q94.88 34.26 98.05 31.97Q101.22 29.68 101.9 25.5H109.26Q108.73 29.76 106.39 33.29Q104.06 36.82 99.99 38.93Q95.93 41.03 90.26 41.03Z M126.86 40V0H134.16V40ZM133.06 23.11V16.89L149.29 16.85V23.08ZM133.06 6.22V0H150.09V6.22Z M166.66 24.66 154.49 0H162.01L171.5 19.68L169.68 19.12H175.14L173.21 19.68L181.96 0H189.06L177.75 24.66ZM168.63 40V23.47H175.78V40Z"/><circle cx="118.06" cy="35.8" r="4.2" fill="#35E883"/></g></svg></div>
+
+    <!-- Estado: carregando -->
+    <section id="state-loading" class="state" aria-busy="true">
+      <div class="spinner" role="status" aria-label="Carregando"></div>
+    </section>
+
+    <!-- Estado: página de pagamento -->
+    <section id="state-pay" class="state" hidden>
+
+      <!-- 1. Assistente de voz -->
+      <div class="assistant" id="assistant">
+        <button type="button" class="orb" id="audioBtn" aria-label="Ouvir orientação novamente">
+          <span class="rings" aria-hidden="true"><i></i><i></i><i></i></span>
+          <svg class="orb-icon" viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M11 5 6 9H3v6h3l5 4V5z"/>
+            <path d="M15.5 8.5a5 5 0 0 1 0 7"/>
+            <path d="M18.5 5.5a9 9 0 0 1 0 13"/>
+          </svg>
+        </button>
+        <div class="waves" id="waves" aria-hidden="true">
+          <b></b><b></b><b></b><b></b><b></b><b></b><b></b><b></b><b></b>
+        </div>
+        <p class="assistant-status" id="audioStatus">Assistente falando agora</p>
+      </div>
+
+      <!-- 2 e 3. Título e subtítulo -->
+      <header class="head">
+        <h1>Pagamento via Pix</h1>
+        <p>Rápido, prático e seguro.</p>
+      </header>
+
+      <!-- 4. Cartão -->
+      <article class="card" aria-labelledby="keyLabel">
+        <div class="card-top">
+          <span class="key-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="8" cy="15" r="4"/><path d="m11 12 9-9"/><path d="m16 7 3 3"/><path d="m14 9 2 2"/>
+            </svg>
+          </span>
+          <span class="label" id="keyLabel">Chave Pix</span>
+          <span class="secure">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 5 6v5c0 4.5 3 8 7 10 4-2 7-5.5 7-10V6l-7-3z"/><path d="m9 12 2 2 4-4"/></svg>
+            Ambiente seguro
+          </span>
+        </div>
+
+        <p class="key" id="pixKey" translate="no"></p>
+
+        <dl class="meta">
+          <div><dt>Recebedor</dt><dd id="receiver"></dd></div>
+          <div><dt>Banco</dt><dd id="bank"></dd></div>
+        </dl>
+      </article>
+
+      <!-- 5. Botão copiar -->
+      <button type="button" class="copy" id="copyBtn">
+        <svg class="ic-copy" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></svg>
+        <svg class="ic-ok" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 5 5 9-10"/></svg>
+        <span id="copyLabel">Copiar chave Pix</span>
+      </button>
+      <p class="toast" id="toast" role="status" aria-live="polite"></p>
+
+      <!-- 6. Orientação -->
+      <p class="hint">Abra o aplicativo do seu banco, cole a chave Pix e finalize o pagamento.</p>
+    </section>
+
+    <!-- Estado: não encontrado -->
+    <section id="state-404" class="state state-center" hidden>
+      <div class="orb orb-static" aria-hidden="true">
+        <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/><path d="M9 9l4 4M13 9l-4 4"/></svg>
+      </div>
+      <header class="head">
+        <h1>Página não encontrada</h1>
+        <p>Não localizamos esta página de pagamento. Confira a plaquinha ou fale com quem atendeu você.</p>
+      </header>
+    </section>
+  </main>
+
+  <script>
+(function () {
+  'use strict';
+
+  /* ===== CADASTRO DE PLAQUINHAS: edite aqui =====
+     Copie um bloco, troque o identificador (ex.: cliente04) e preencha os dados.
+     Endereço: /pix/<identificador>  (ou /pix.html?id=<identificador>) */
+  var CLIENTES = {
+    "cliente01": {
+      "nome": "Nome do Recebedor Exemplo",
+      "banco": "Nome do Banco",
+      "chave": "00000000000",
+      "audio": "",
+      "mensagem": ""
+    },
+    "cliente02": {
+      "nome": "Outro Recebedor Exemplo",
+      "banco": "Outro Banco",
+      "chave": "exemplo@email.com",
+      "audio": "",
+      "mensagem": ""
+    },
+    "cliente03": {
+      "nome": "Terceiro Recebedor Exemplo",
+      "banco": "Banco Exemplo",
+      "chave": "+5561900000000",
+      "audio": "/assets/pix/audio/cliente03.mp3",
+      "mensagem": "Para finalizar sua compra, copie a chave Pix abaixo e pague pelo aplicativo do seu banco."
+    }
+  };
+
+  var DEFAULT_MESSAGE = 'Para finalizar sua compra, copie a chave Pix abaixo e pague pelo aplicativo do seu banco.';
+  var $ = function (id) { return document.getElementById(id); };
+
+  var client = null;
+  var audioEl = null;
+  var playing = false;
+  var startTimer = null;
+
+  /* ---------- Estados ---------- */
+  function show(state) {
+    ['loading', 'pay', '404'].forEach(function (s) { $('state-' + s).hidden = (s !== state); });
+  }
+
+  /* ---------- Identificador a partir da URL: /pix/<id> ---------- */
+  function getId() {
+    var m = location.pathname.match(/\/pix\/([^\/?#]+)\/?$/i);
+    var id = m ? decodeURIComponent(m[1]) : (new URLSearchParams(location.search).get('id') || location.hash.replace('#', ''));
+    return id && /^[a-z0-9_-]{1,64}$/i.test(id) ? id.toLowerCase() : null;
+  }
+
+  /* ---------- Áudio ---------- */
+  function setPlaying(on) {
+    playing = on;
+    var a = $('assistant');
+    a.classList.toggle('playing', on);
+    if (on) a.classList.remove('blocked');
+    $('audioStatus').textContent = on ? 'Assistente falando agora' : 'Toque para ouvir novamente';
+  }
+
+  function setBlocked() {
+    setPlaying(false);
+    $('assistant').classList.add('blocked');
+    $('audioStatus').textContent = 'Toque para ouvir a orientação';
+  }
+
+  function stopAudio() {
+    clearTimeout(startTimer);
+    if (audioEl) { try { audioEl.pause(); audioEl.currentTime = 0; } catch (e) {} }
+    if ('speechSynthesis' in window) { try { speechSynthesis.cancel(); } catch (e) {} }
+  }
+
+  function pickVoice() {
+    var voices = speechSynthesis.getVoices() || [];
+    return voices.filter(function (v) { return /^pt[-_]BR$/i.test(v.lang); })[0] ||
+           voices.filter(function (v) { return /^pt/i.test(v.lang); })[0] || null;
+  }
+
+  function speak(text, fromUser) {
+    if (!('speechSynthesis' in window) || typeof SpeechSynthesisUtterance === 'undefined') {
+      setBlocked(); $('audioStatus').textContent = 'Áudio indisponível neste navegador';
+      return;
+    }
+    try {
+      speechSynthesis.cancel();
+      var u = new SpeechSynthesisUtterance(text);
+      u.lang = 'pt-BR';
+      var v = pickVoice();
+      if (v) u.voice = v;
+      u.rate = 1;
+      u.onstart = function () { clearTimeout(startTimer); setPlaying(true); };
+      u.onend = function () { setPlaying(false); };
+      u.onerror = function (e) {
+        clearTimeout(startTimer);
+        if (e && (e.error === 'not-allowed' || e.error === 'audio-busy')) setBlocked(); else setPlaying(false);
+      };
+      speechSynthesis.speak(u);
+      // Se não iniciar em ~1,5s, o navegador provavelmente bloqueou o autoplay.
+      if (!fromUser) startTimer = setTimeout(function () { if (!playing) setBlocked(); }, 1500);
+    } catch (e) { setBlocked(); }
+  }
+
+  function playAudio(fromUser) {
+    stopAudio();
+    var msg = (client && client.mensagem) || DEFAULT_MESSAGE;
+
+    if (client && client.audio) {
+      audioEl = new Audio(client.audio);
+      audioEl.preload = 'auto';
+      audioEl.onplaying = function () { setPlaying(true); };
+      audioEl.onended = audioEl.onpause = function () { setPlaying(false); };
+      audioEl.onerror = function () { speak(msg, fromUser); }; // arquivo ausente: usa voz do navegador
+      var p = audioEl.play();
+      if (p && p.catch) p.catch(function (err) {
+        if (err && err.name === 'NotAllowedError') setBlocked(); else speak(msg, fromUser);
+      });
+    } else {
+      speak(msg, fromUser);
+    }
+  }
+
+  /* ---------- Copiar ---------- */
+  function fallbackCopy(text) {
+    var ta = document.createElement('textarea');
+    ta.value = text;
+    ta.setAttribute('readonly', '');
+    ta.style.cssText = 'position:fixed;top:0;left:0;opacity:0;font-size:16px';
+    document.body.appendChild(ta);
+    ta.focus(); ta.select(); ta.setSelectionRange(0, text.length);
+    var ok = false;
+    try { ok = document.execCommand('copy'); } catch (e) {}
+    document.body.removeChild(ta);
+    return ok;
+  }
+
+  function copyText(text) {
+    if (navigator.clipboard && window.isSecureContext) {
+      return navigator.clipboard.writeText(text).then(function () { return true; }, function () { return fallbackCopy(text); });
+    }
+    return Promise.resolve(fallbackCopy(text));
+  }
+
+  var resetTimer = null;
+  function onCopy() {
+    if (!client) return;
+    copyText(client.chave).then(function (ok) {
+      var btn = $('copyBtn'), toast = $('toast');
+      clearTimeout(resetTimer);
+      toast.classList.toggle('error', !ok);
+      toast.textContent = ok ? 'Chave Pix copiada com sucesso!' : 'Não foi possível copiar. Toque e segure a chave para copiar.';
+      toast.classList.add('show');
+      btn.classList.toggle('done', ok);
+      $('copyLabel').textContent = ok ? 'Chave copiada' : 'Copiar chave Pix';
+      resetTimer = setTimeout(function () {
+        toast.classList.remove('show');
+        btn.classList.remove('done');
+        $('copyLabel').textContent = 'Copiar chave Pix';
+      }, 3500);
+    });
+  }
+
+  /* ---------- Renderização (somente textContent, sem innerHTML) ---------- */
+  function render(c) {
+    client = c;
+    $('pixKey').textContent = c.chave;
+    $('receiver').textContent = c.nome;
+    $('bank').textContent = c.banco;
+    document.title = 'Pagamento via Pix | NFC.FY';
+    show('pay');
+
+    $('copyBtn').addEventListener('click', onCopy);
+    $('audioBtn').addEventListener('click', function () { playAudio(true); });
+
+    if ('speechSynthesis' in window && speechSynthesis.addEventListener) {
+      speechSynthesis.addEventListener('voiceschanged', function () {});
+    }
+    playAudio(false);
+    // Primeiro toque em qualquer lugar libera o áudio se o autoplay foi bloqueado.
+    document.addEventListener('pointerdown', function once() {
+      document.removeEventListener('pointerdown', once);
+      if ($('assistant').classList.contains('blocked')) playAudio(true);
+    });
+  }
+
+  function init() {
+    var id = getId();
+    // Prévia: arquivo aberto direto do aparelho (sem servidor) mostra o primeiro cliente.
+    if (!id && location.protocol === 'file:') id = Object.keys(CLIENTES)[0];
+    if (!id) return show('404');
+    var c = Object.prototype.hasOwnProperty.call(CLIENTES, id) ? CLIENTES[id] : null;
+    if (!c || !c.chave || !c.nome || !c.banco) return show('404');
+    render(c);
+  }
+
+  window.addEventListener('pagehide', stopAudio);
+  init();
+})();
+</script>
+</body>
+</html>
